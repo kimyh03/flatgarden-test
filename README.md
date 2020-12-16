@@ -17,7 +17,7 @@ ___
 
 ### logInOnly guard
 
-- HTTP header에서 req.user의 존재 유무로 요청 접근을 차단합니다.
+- HTTP header에서 req.user의 존재 유무로 private resolver에 대한 요청을 차단합니다.
 
 ### currentUser decorator
 
@@ -35,7 +35,7 @@ ___
 ### getProfile
 
 - 특정 사용자의 정보를 가져옵니다.
-- 해당 사용자가 생성한 게시판의 목록 함께 가져옵니다.
+- 해당 사용자가 생성한 게시판의 목록을 함께 가져옵니다.
 - 존재하지 않는 사용자의 정보는 가져 올 수 없습니다.
 
 ### deleteUser
