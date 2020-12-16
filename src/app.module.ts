@@ -1,53 +1,52 @@
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { UserModule } from './user/user.module';
 import { BoardModule } from './board/board.module';
 import { BoardService } from './board/board.service';
-import { GraphQLModule, GqlModuleOptions } from '@nestjs/graphql';
+import { GraphQLModule } from '@nestjs/graphql';
 import { AppResolver } from './app/app.resolver';
 import { AppService } from './app/app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { typeormConfig } from './shared/util/typeOrmConfig';
+import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
+import { Board } from './board/board.model';
+import { User } from './user/user.model';
+import { AssignUserMiddleware } from './auth/assignUser.middleware';
 
 @Module({
   imports: [
     UserModule,
     BoardModule,
-    TypeOrmModule.forRoot({
-      keepConnectionAlive: true,
-      ...typeormConfig,
+    AuthModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: process.env.NODE_ENV === 'dev' ? '.env.dev' : '.env.test',
     }),
-    GraphQLModule.forRootAsync({
-      useFactory: () => {
-        const schemaModuleOptions: Partial<GqlModuleOptions> = {};
-
-        // If we are in development, we want to generate the schema.graphql
-        if (process.env.NODE_ENV !== 'production' || process.env.IS_OFFLINE) {
-          schemaModuleOptions.autoSchemaFile = 'schema.graphql';
-          schemaModuleOptions.debug = true;
-        } else {
-          // For production, the file should be generated
-          schemaModuleOptions.typePaths = ['dist/schema.graphql'];
-        }
-
-        schemaModuleOptions.uploads = {
-          maxFileSize: 10000000, // 10 MB
-          maxFiles: 5,
-        };
-
-        schemaModuleOptions.formatError = (error) => {
-          console.log(error.message);
-          return error;
-        };
-
-        return {
-          context: ({ req }) => ({ req }),
-          playground: true, // Allow playground in production
-          introspection: true, // Allow introspection in production
-          ...schemaModuleOptions,
-        };
-      },
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: process.env.DATABASE_HOST,
+      port: +process.env.DATABASE_PORT,
+      username: process.env.DATABASE_USERNAME,
+      password: process.env.DATABASE_PASSWORD,
+      database: process.env.DATABASE_NAME,
+      entities: [User, Board],
+      synchronize: true,
+      logging: process.env.NODE_ENV === 'test' ? false : true,
+    }),
+    GraphQLModule.forRoot({
+      autoSchemaFile: 'schema.gql',
     }),
   ],
   providers: [AppService, BoardService, AppResolver],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AssignUserMiddleware)
+      .forRoutes({ path: '/graphql', method: RequestMethod.ALL });
+  }
+}

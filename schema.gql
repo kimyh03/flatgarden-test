@@ -1,0 +1,117 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Board {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+  title: String!
+  content: String!
+  author: User!
+  authorId: Float!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type User {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+  name: String!
+  boards: [Board!]!
+}
+
+type CreateUserOutput {
+  ok: Boolean!
+  error: String
+  token: String
+}
+
+type DeleteUserOutput {
+  ok: Boolean!
+  error: String
+}
+
+type GetProfileOutput {
+  ok: Boolean!
+  error: String
+  user: User
+}
+
+type CreateBoardOutput {
+  ok: Boolean!
+  error: String
+}
+
+type DeleteBoardOutput {
+  ok: Boolean!
+  error: String
+}
+
+type EditBoardOutput {
+  ok: Boolean!
+  error: String
+}
+
+type GetBoardDetailOutput {
+  ok: Boolean!
+  error: String
+  board: Board
+}
+
+type SearchBoardOutput {
+  ok: Boolean!
+  error: String
+  boards: [Board!]
+}
+
+type Query {
+  getProfile(args: GetProfileInput!): GetProfileOutput!
+  getBoardDetail(args: GetBoardDetailInput!): GetBoardDetailOutput!
+  searchBoard(args: SearchBoardInput!): SearchBoardOutput!
+  hello(data: String): String!
+}
+
+input GetProfileInput {
+  userId: Float!
+}
+
+input GetBoardDetailInput {
+  boardId: Float!
+}
+
+input SearchBoardInput {
+  searchTerm: String!
+}
+
+type Mutation {
+  createUser(args: CreateUserInput!): CreateUserOutput!
+  deleteUser: DeleteUserOutput!
+  createBoard(args: CreateBoardInput!): CreateBoardOutput!
+  editBoard(args: EditBoardInput!): EditBoardOutput!
+  deleteBoard(args: DeleteBoardInput!): DeleteBoardOutput!
+}
+
+input CreateUserInput {
+  name: String!
+}
+
+input CreateBoardInput {
+  title: String!
+  content: String!
+}
+
+input EditBoardInput {
+  content: String!
+  boardId: Float!
+}
+
+input DeleteBoardInput {
+  boardId: Float!
+}

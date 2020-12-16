@@ -26,6 +26,20 @@ type User {
   boards: [Board!]!
 }
 
+type CreateUserOutput {
+  ok: Boolean!
+  error: String
+  token: String
+}
+
 type Query {
   hello(data: String): String!
+}
+
+type Mutation {
+  createUser(args: CreateUserInput!): CreateUserOutput!
+}
+
+input CreateUserInput {
+  name: String!
 }
