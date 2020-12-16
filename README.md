@@ -77,3 +77,6 @@ ___
 
 - 작성한 모든 resolver에 대한 e2e 테스트를 진행했습니다.
 - 각 resolver의 모든 예외 상황에 대한 테스트를 진행했습니다.
+- 테스트 결과창을 첨부합니다.
+
+![test result](https://user-images.githubusercontent.com/59421544/102335506-5d3f2200-3fd3-11eb-8f5a-11a9e859036c.jpg)
